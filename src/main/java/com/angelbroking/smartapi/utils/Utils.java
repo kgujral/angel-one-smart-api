@@ -1,16 +1,14 @@
 package com.angelbroking.smartapi.utils;
 
+import org.json.JSONObject;
+
 public class Utils {
 	private Utils() {
 		
 	}
 
-	public static boolean isEmpty(final CharSequence cs) {
-		return cs == null || cs.length() == 0;
-	}
-
-	public static boolean isNotEmpty(final CharSequence cs) {
-		return !isEmpty(cs);
+	public static boolean isEmpty(final Integer nm) {
+		return nm == null || nm.equals(0);
 	}
 
 	public static boolean areCharArraysEqual(char[] a, char[] b) {

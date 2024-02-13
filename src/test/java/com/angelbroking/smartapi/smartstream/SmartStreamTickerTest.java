@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.Scanner;
 import java.util.Set;
 
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -17,7 +18,7 @@ import com.angelbroking.smartapi.smartstream.models.SmartStreamSubsMode;
 import com.angelbroking.smartapi.smartstream.models.TokenID;
 import com.angelbroking.smartapi.smartstream.ticker.SmartStreamTicker;
 import com.neovisionaries.ws.client.WebSocketException;
-
+@Slf4j
 public class SmartStreamTickerTest {
 
 	private static String clientID;
@@ -33,7 +34,7 @@ public class SmartStreamTickerTest {
 		apiKey = System.getProperty("apiKey");
 
 		Scanner sc = new Scanner(System.in);
-		System.out.print("enter totp: ");
+		log.info("enter totp: ");
 		totp = sc.nextLine();
 
 		SmartConnect smartConnect = new SmartConnect(apiKey);
@@ -48,6 +49,25 @@ public class SmartStreamTickerTest {
 			SmartStreamTicker ticker = new SmartStreamTicker(clientID, feedToken, new SmartStreamListenerImpl());
 			ticker.connect();
 			ticker.subscribe(SmartStreamSubsMode.QUOTE, getTokens());
+//			ticker.subscribe(SmartStreamSubsMode.SNAP_QUOTE, getTokens());
+			// uncomment the below line to allow test thread to keep running so that ticks
+			// can be received in the listener
+//			Thread.sleep(5000);
+			ticker.disconnect();
+			log.info("isConnected = "+ticker.isConnectionOpen());
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
+
+	}
+
+	@Test
+	void testSmartStreamTicket_WithInitialDelayAndPeriod() throws WebSocketException, InterruptedException {
+		try {
+			SmartStreamTicker ticker = new SmartStreamTicker(clientID, feedToken, new SmartStreamListenerImpl(), 6000, 6000);
+			ticker.connect();
+			ticker.subscribe(SmartStreamSubsMode.SNAP_QUOTE, getTokens());
 //			ticker.subscribe(SmartStreamSubsMode.SNAP_QUOTE, getTokens());
 			// uncomment the below line to allow test thread to keep running so that ticks
 			// can be received in the listener
